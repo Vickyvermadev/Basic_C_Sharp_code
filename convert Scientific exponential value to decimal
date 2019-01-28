@@ -1,0 +1,8 @@
+ public ActionResult Index()
+        {
+            string _value = "2.09550901805872E-05";
+            //decimal h1 = decimal.Parse(_value);
+            decimal h2 = decimal.Parse(_value, System.Globalization.NumberStyles.AllowExponent | 
+            System.Globalization.NumberStyles.AllowDecimalPoint);
+            return View();
+        }
