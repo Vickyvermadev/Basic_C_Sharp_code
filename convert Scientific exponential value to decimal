@@ -6,3 +6,7 @@
             System.Globalization.NumberStyles.AllowDecimalPoint);
             return View();
         }
+
+
+below is msdn link
+https://docs.microsoft.com/en-us/dotnet/api/system.globalization.numberstyles?view=netframework-4.7.2
