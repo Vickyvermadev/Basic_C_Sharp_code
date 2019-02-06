@@ -1,0 +1,119 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RPT_SAP_INTEGRATION
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string G_SANCN = "RPT / 1819 / Construction - B & F / 0006";
+            string G_TAAMT = "6000000";
+            string G_SDATE = "2019-01-31";
+            string G_EDATE = "2019-02-01";
+            string G_GJAHR = "2018";
+            callGetRestApi(G_SDATE, G_EDATE, G_GJAHR);
+            callPostRestApi(G_SANCN,G_TAAMT);
+            callPutRestApi(G_SANCN,G_TAAMT);
+
+        }
+        public static void callPostRestApi(string G_SANCN, string G_TAAMT)
+        {
+            try
+            {
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://10.12.8.135:8000/sap/bc/zmm_rpt_insert?sap-client=410");
+                httpWebRequest.Method = "POST";
+                httpWebRequest.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes("rptusr1:$RPtU925"));
+                httpWebRequest.ContentType = "application/json";
+                //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+                httpWebRequest.KeepAlive = false;
+                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                {
+                    string json = "{\"WA_SANCN\":{\"G_SANCN\":\"" + G_SANCN + "\",\"G_TAAMT\":\"" + G_TAAMT + "\"}}";
+                    streamWriter.Write(json);
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                    var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                    {
+                        var result = streamReader.ReadToEnd();
+                        Console.WriteLine(result);
+                        Console.ReadKey();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public static void callPutRestApi(string G_SANCN, string G_TAAMT)
+        {
+            try
+            {
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://10.12.8.135:8000/sap/bc/zmm_rpt_topup?sap-client=410");
+                httpWebRequest.Method = "POST";
+                httpWebRequest.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes("rptusr1:$RPtU925"));
+                httpWebRequest.ContentType = "application/json";
+                //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+                httpWebRequest.KeepAlive = false;
+                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                {
+                    /*amount will update against sanction no in this scenario.*/
+                    string json = "{\"WA_SANCN\":{\"G_SANCN\":\"" + G_SANCN + "\",\"G_TAAMT\":\"" + G_TAAMT + "\"}}";
+                    streamWriter.Write(json);
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                    var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                    {
+                        var result = streamReader.ReadToEnd();
+                        Console.WriteLine(result);
+                        Console.ReadKey();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        private static void callGetRestApi(string G_SDATE, string G_EDATE, string G_GJAHR)
+        {
+            try
+            {
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://10.12.8.135:8000/sap/bc/zmm_sanction?sap-client=410");
+                httpWebRequest.Method = "POST";
+                httpWebRequest.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes("rptusr1:$RPtU925"));
+                httpWebRequest.ContentType = "application/json";
+                //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+                httpWebRequest.KeepAlive = false;
+                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                {
+                    /*sanction details will be return againstsent param in this scenario.*/
+                    string json = "{\"WA_INPT\":{ \"G_SDATE\":\"" + G_SDATE + "\",\"G_EDATE\":\"" + G_EDATE + "\",\"G_GJAHR\":\"" + G_GJAHR + "\"}}";
+                    //string json = "{'WA_INPT':{'G_SDATE':'2019-01-31','G_EDATE':'2019-02-01','G_GJAHR':'2018'}}";
+                    streamWriter.Write(json);
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                    var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                    {
+                        var result = streamReader.ReadToEnd();
+                        Console.WriteLine(result);
+                        Console.ReadKey();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+}
